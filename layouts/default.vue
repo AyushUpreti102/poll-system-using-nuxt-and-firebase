@@ -20,7 +20,7 @@
         </template>
       </v-snackbar>
     </div>
-    <v-main>
+    <v-main style="padding: 30px 0 0;">
       <NavBar/>
       <nuxt/>
     </v-main>

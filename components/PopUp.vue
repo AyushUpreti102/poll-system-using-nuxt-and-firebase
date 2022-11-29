@@ -8,6 +8,7 @@
         <v-btn
           v-bind="attrs"
           v-on="on"
+          @click="showPollDetails"
         >
           {{name}}
         </v-btn>
@@ -50,7 +51,7 @@
           <v-spacer></v-spacer>
           <v-btn
             text
-            @click="addPoll"
+            @click="addOrEditPoll"
           >
             Save
           </v-btn>
@@ -63,7 +64,7 @@
 
 export default {
     name: 'PopUp',
-    props: ['name'],
+    props: ['name', 'pollDetails'],
     data(){
         return{
             dialog: false,
@@ -78,21 +79,38 @@ export default {
         }
     },
     methods: {
-        async addPoll(){
-          if(this.poll.title !== '' && !this.poll.options.length < 3){
-            await this.$store.dispatch('addPoll', {title: this.poll.title, options: this.poll.options})
+        showPollDetails(){
+          if(this.name==='Edit'){
+            this.poll.title = this.pollDetails.title;
+            this.pollDetails.options.map((el)=>{
+              this.poll.options.push(el);
+            });
+          }
+        },
+        async addOrEditPoll(){
+          if(this.name==='Add Poll'){
+            if(this.poll.title !== '' && !this.poll.options.length < 3){
+              await this.$store.dispatch('addPoll', {title: this.poll.title, options: this.poll.options})
+              this.poll.title='';
+              const options = []
+              this.poll.options = options;
+              this.dialog = false;
+            }
+            else{
+              if(this.poll.title===''){
+                this.$store.dispatch('alert', {message: 'enter title'})
+              }
+              else if(this.poll.options.length < 3){
+                this.$store.dispatch('alert', {message: '3 options should be added in a poll'})
+              }
+            }
+          }
+          else{
+            await this.$store.dispatch('editPoll', {id: this.pollDetails.id, title: this.poll.title, options: this.poll.options})
             this.poll.title='';
             const options = []
             this.poll.options = options;
             this.dialog = false;
-          }
-          else{
-            if(this.poll.title===''){
-              this.$store.dispatch('alert', {message: 'enter title'})
-            }
-            else if(this.poll.options.length < 3){
-              this.$store.dispatch('alert', {message: '3 options should be added in a poll'})
-            }
           }
         },
         addOption(){
@@ -105,7 +123,6 @@ export default {
               this.$store.dispatch('alert', {message: 'fill the options field'})  
             }
             else{
-              console.log(this.poll.options.length);
               this.$store.dispatch('alert', {message: 'only 3 options are allowed in a poll'})
             }
           }

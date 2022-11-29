@@ -13,7 +13,7 @@
               </v-radio>
             </v-radio-group>
             <v-card-actions>
-              <PopUp name='Edit'/>
+              <PopUp name='Edit' :pollDetails="pollDetails"/>
               <v-spacer></v-spacer>
               <v-btn text @click="deletePoll">delete <v-icon small>mdi-delete</v-icon></v-btn>
             </v-card-actions>
@@ -35,7 +35,7 @@ export default {
     methods: {
       async deletePoll(){
         this.$store.dispatch('deletePoll', this.pollDetails.id)
-      }
+      },
     }
 }
 </script>

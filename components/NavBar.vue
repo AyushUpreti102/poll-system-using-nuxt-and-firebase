@@ -2,10 +2,10 @@
     <v-app-bar app flat dense color="#1976D2" dark>
         <v-app-bar-title>Polling System</v-app-bar-title>
         <v-spacer></v-spacer>
-        <nuxt-link to="SignIn" class="text-style">
+        <nuxt-link to="SignIn" class="text-style" v-if="user.uid === null">
             <v-btn text>Sign in</v-btn>
         </nuxt-link>
-        <div class="text-center">
+        <div class="text-center" v-else>
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
@@ -39,6 +39,11 @@ export default {
                 { title: 'Logout' },
             ],
         }
+    },
+    computed: {
+      user(){
+        return this.$store.getters.user;
+      }
     },
     methods: {
       async selectedAction(action){

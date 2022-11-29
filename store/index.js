@@ -7,6 +7,11 @@ export const state = ()=> ({
     snackbar: {
       show: false,
       message: ''
+    },
+    user: {
+      uid: null,
+      username: '',
+      role: ''
     }
 })
 
@@ -16,6 +21,9 @@ export const getters = {
     },
     allPolls(state) {
       return state.polls
+    },
+    user(state){
+      return state.user;
     }
 }
 
@@ -29,6 +37,17 @@ export const mutations = {
   },
   GET_POLLS: (state, polls)=>{
     state.polls = polls;
+  },
+  SAVE_USER: (state, userDetails)=>{
+    const user = JSON.parse(userDetails)
+    state.user.uid = user.uid;
+    state.user.username = user.userName;
+    state.user.role = user.role;
+  },
+  LOGOUT: (state)=>{
+    state.user.uid = null;
+    state.user.username = '',
+    state.user.role = ''
   }
 }
 
@@ -61,6 +80,7 @@ export const actions = {
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         localStorage.setItem('user', JSON.stringify(doc.data()))
+        context.commit('SAVE_USER', JSON.stringify(doc.data()))
       });
     }
     catch (err){
@@ -83,14 +103,22 @@ export const actions = {
     await signOut(getAuth());
     router.router.push({name: 'index'});
     localStorage.clear();
+    context.commit('LOGOUT');
   },
   addPoll : async (context, poll)=>{
     await addDoc(collection(db, 'polls'), {
+      createdAt: serverTimestamp(),
       title: poll.title,
-      options: poll.options
+      options: poll.options,
     })
   },
   deletePoll : async (context, id)=>{
     await deleteDoc(doc(db, 'polls', id));
+  },
+  editPoll: async (context, poll)=>{
+    await setDoc(doc(db, 'polls', poll.id), {
+      title: poll.title,
+      options: poll.options,
+    }, {merge: true});
   }
 }

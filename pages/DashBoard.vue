@@ -30,29 +30,18 @@ import PopUp from '../components/PopUp.vue'
 export default {
     name: 'DashBoard',
     components: {
-    PollCard,
-    PopUp
-},
+      PollCard,
+      PopUp
+    },
     async mounted(){
-      this.loading = true,
-      // await onSnapshot(collection(db, 'polls'), snapshot=>{
-      //   const polls = [];
-      //   snapshot.forEach(doc=>{
-      //       polls.push({
-      //         id: doc.id,
-      //         title: doc.data().title,
-      //         options: doc.data().options
-      //       });
-      //   })
-      //   this.polls = polls;
-      // })  
+      this.loading = true,  
       await this.$store.dispatch('getPolls')
       this.loading = false
     },
     computed: {
       allPolls(){
         return this.$store.getters.allPolls;
-      }
+      },
     },
     data(){
         return{
